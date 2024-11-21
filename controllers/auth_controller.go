@@ -71,3 +71,28 @@ func LoginUser(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, map[string]string{"token": token})
 }
+
+func ResetPassword(c echo.Context) error {
+	var request struct {
+		Email       string `json:"email"`
+		OldPassword string `json:"old_password"`
+		NewPassword string `json:"new_password"`
+	}
+
+	if err := c.Bind(&request); err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid input"})
+	}
+
+	err := services.ResetPassword(request.Email, request.OldPassword, request.NewPassword)
+	if err != nil {
+		if err.Error() == "user not found" {
+			return c.JSON(http.StatusNotFound, map[string]string{"error": "User not found"})
+		}
+		if err.Error() == "incorrect old password" {
+			return c.JSON(http.StatusBadRequest, map[string]string{"error": "Incorrect old password"})
+		}
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to reset password"})
+	}
+
+	return c.JSON(http.StatusOK, map[string]string{"message": "Password updated successfully"})
+}
