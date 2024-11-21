@@ -1,12 +1,13 @@
 package utils
 
 import (
+	"os"
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
 )
 
-var secretKey = []byte("your-secret-key")
+var secretKey = []byte(os.Getenv("JWT_SECRET"))
 
 // Kullanıcı ID'sine dayalı JWT oluşturur
 func GenerateJWT(userID int) (string, error) {

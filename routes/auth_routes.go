@@ -9,4 +9,5 @@ import (
 func initAuthRoutes(e *echo.Echo) {
 	e.POST("/auth/register", controllers.RegisterUser)
 	e.POST("/auth/login", controllers.LoginUser)
+	e.PUT("/auth/reset-password", controllers.ResetPassword)
 }

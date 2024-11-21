@@ -39,7 +39,7 @@ func LoadConfig() {
 		DBPassword: getEnvOrPanic("DB_PASSWORD"),
 		DBName:     getEnvOrPanic("DB_NAME"),
 		DBSSLMode:  getEnvOrDefault("DB_SSLMODE", "disable"),
-		// JWTSecret:  getEnvOrPanic("JWT_SECRET"),
+		JWTSecret:  getEnvOrPanic("JWT_SECRET"),
 	}
 }
 

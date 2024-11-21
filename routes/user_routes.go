@@ -10,4 +10,5 @@ import (
 func initUserRoutes(e *echo.Echo) {
 
 	e.GET("/users", controllers.GetUsers, middleware.AuthMiddleware)
+	e.PUT("/users/email", controllers.UpdateEmail, middleware.AuthMiddleware)
 }

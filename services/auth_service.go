@@ -40,3 +40,29 @@ func AuthenticateUser(email, password string) (*models.User, error) {
 
 	return &user, nil
 }
+
+func ResetPassword(email, oldPassword, newPassword string) error {
+	var user models.User
+	query := "SELECT id, password_hash FROM users WHERE email = $1"
+	err := database.DB.Get(&user, query, email)
+	if err != nil {
+		return errors.New("user not found")
+	}
+
+	if !utils.CheckPasswordHash(oldPassword, user.PasswordHash) {
+		return errors.New("incorrect old password")
+	}
+
+	hashedPassword, err := utils.HashPassword(newPassword)
+	if err != nil {
+		return err
+	}
+
+	query = "UPDATE users SET password_hash = $1 WHERE id = $2"
+	_, err = database.DB.Exec(query, hashedPassword, user.ID)
+	if err != nil {
+		return errors.New("failed to update password")
+	}
+
+	return nil
+}
