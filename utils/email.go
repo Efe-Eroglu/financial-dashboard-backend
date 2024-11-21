@@ -3,14 +3,14 @@ package utils
 import (
 	"fmt"
 	"net/smtp"
+	"pulsefin/config"
 )
 
-// SendEmail sends an email using the provided SMTP server
 func SendEmail(to, subject, body string) error {
-	smtpHost := "smtp.gmail.com"
-	smtpPort := "587"
-	senderEmail := "eferoglu1967@gmail.com"
-	senderPassword := "bfkx fpxl beee wxcl"
+	smtpHost := config.AppConfig.SMTPHost
+	smtpPort := config.AppConfig.SMTPPort
+	senderEmail := config.AppConfig.SMTPEmail
+	senderPassword := config.AppConfig.SMTPPassword
 
 	message := fmt.Sprintf("Subject: %s\n\n%s", subject, body)
 

@@ -14,7 +14,7 @@ const (
 	allChars     = lowerChars + upperChars + digits + specialChars
 )
 
-func GenerateStrongPassword(length int) (string, error) {
+func GenerateStrongResetCode(length int) (string, error) {
 	if length < 8 {
 		return "", fmt.Errorf("password length should be at least 8 characters")
 	}

@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"net/http"
 	"pulsefin/models"
 	"pulsefin/services"
@@ -83,7 +82,7 @@ func ForgotPassword(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid email format or missing email"})
 	}
 
-	resetCode, err := services.CreatePasswordResetRequest(request.Email)
+	_, err := services.CreatePasswordResetRequest(request.Email)
 	if err != nil {
 		if err.Error() == "user not found" {
 			return c.JSON(http.StatusNotFound, map[string]string{"error": "User not found"})
@@ -91,7 +90,27 @@ func ForgotPassword(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to process request"})
 	}
 
-	fmt.Printf("Mock email sent to %s: Reset code: %s\n", request.Email, resetCode)
-
 	return c.JSON(http.StatusOK, map[string]string{"message": "If the email exists, a password reset code has been sent"})
+}
+
+func ResetPasswordWithCode(c echo.Context) error {
+	var request struct {
+		Email       string `json:"email"`
+		ResetCode   string `json:"reset_code"`
+		NewPassword string `json:"new_password"`
+	}
+
+	if err := c.Bind(&request); err != nil || request.Email == "" || request.ResetCode == "" || request.NewPassword == "" {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid input"})
+	}
+
+	err := services.ResetPasswordWithCode(request.Email, request.ResetCode, request.NewPassword)
+	if err != nil {
+		if err.Error() == "invalid or expired reset code" {
+			return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid or expired reset code"})
+		}
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to reset password"})
+	}
+
+	return c.JSON(http.StatusOK, map[string]string{"message": "Password reset successfully"})
 }
