@@ -2,23 +2,16 @@ package controllers
 
 import (
 	"net/http"
-	"pulsefin/models"
+	"pulsefin/services"
 
-	"github.com/jmoiron/sqlx"
 	"github.com/labstack/echo/v4"
 )
 
-func GetStocks(db *sqlx.DB) echo.HandlerFunc {
-	return func(c echo.Context) error {
-		var stocks []models.Stock
-
-		query := "SELECT * FROM stocks"
-		err := db.Select(&stocks, query)
-
-		if err != nil {
-			return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Database query failed"})
-		}
-
-		return c.JSON(http.StatusOK, stocks)
+func GetStocks(c echo.Context) error {
+	stocks, err := services.GetStocks()
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Database query failed"})
 	}
+
+	return c.JSON(http.StatusOK, stocks)
 }

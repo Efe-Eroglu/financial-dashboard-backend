@@ -6,8 +6,8 @@ import (
 )
 
 func InitRoutes(e *echo.Echo, db *sqlx.DB) {
-	initUserRoutes(e, db)
-	initStockRoutes(e, db)
-	initWatchlistRoutes(e, db)
-	initNewsRoutes(e, db)
+	initUserRoutes(e)
+	initStockRoutes(e)
+	initWatchlistRoutes(e)
+	initNewsRoutes(e)
 }

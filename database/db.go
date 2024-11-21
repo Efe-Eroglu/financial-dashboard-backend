@@ -9,7 +9,11 @@ import (
 	_ "github.com/lib/pq"
 )
 
-func ConnectDB() *sqlx.DB {
+// Global DB bağlantısı
+var DB *sqlx.DB
+
+// ConnectDB: Veritabanına bağlanır ve global DB değişkenini atar
+func ConnectDB() {
 	host := os.Getenv("DB_HOST")
 	port := os.Getenv("DB_PORT")
 	user := os.Getenv("DB_USER")
@@ -22,15 +26,15 @@ func ConnectDB() *sqlx.DB {
 		host, port, user, password, dbname, sslmode,
 	)
 
-	db, err := sqlx.Connect("postgres", dsn)
-
+	var err error
+	DB, err = sqlx.Connect("postgres", dsn)
 	if err != nil {
-		log.Fatalf("Veritabanı bağlantısı başarısız oldu : %v", err)
+		log.Fatalf("Veritabanı bağlantısı başarısız oldu: %v", err)
 	}
-	if err = db.Ping(); err != nil {
-		log.Fatalf("Veritabanı bağlantısı başarısız oldu : %v", err)
+
+	if err = DB.Ping(); err != nil {
+		log.Fatalf("Veritabanı bağlantısı başarısız oldu: %v", err)
 	}
 
 	log.Println("Veritabanı bağlantısı başarılı")
-	return db
 }
