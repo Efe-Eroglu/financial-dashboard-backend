@@ -1,1 +1,52 @@
+# Binaries ve derleme dosyaları
+/bin/
+/build/
+/out/
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Go mod dosyaları
+/go.sum
+/go.mod
+
+# Paket yönetimi tarafından oluşturulan dosyalar
+/vendor/
+
+# Çevresel değişken dosyaları
 .env
+config/environment/*.env
+
+# IDE ve editör dosyaları
+.idea/
+*.iml
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# İşletim sistemi dosyaları
+.DS_Store
+Thumbs.db
+
+# Log dosyaları
+*.log
+
+# Test Coverage raporları
+*.cover
+*.out
+
+# Geçici dosyalar
+*.tmp
+*.temp
+*.swp
+*.swo
+*.bak
+*.old
+
+# Go çalıştırma dosyaları
+*.test
+*.prof
+
+# Docker dosyaları
+docker-compose.override.yml
