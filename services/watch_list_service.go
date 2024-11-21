@@ -6,13 +6,16 @@ import (
 	"pulsefin/models"
 )
 
-func GetWatchList() ([]models.Watchlist, error) {
-	var watchList []models.Watchlist
+func GetWatchlist(userID int) ([]models.Watchlist, error) {
+	var watchlist []models.Watchlist
 
-	query := "SELECT * FROM watchlist"
-	err := database.DB.Select(&watchList, query)
+	query := "SELECT * FROM watchlist WHERE user_id = $1"
+	err := database.DB.Select(&watchlist, query, userID)
+	if err != nil {
+		return nil, err
+	}
 
-	return watchList, err
+	return watchlist, nil
 }
 
 func AddToWatchlist(userID int, stockSymbol string) error {
