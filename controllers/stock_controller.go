@@ -7,14 +7,6 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-// GetStocks godoc
-// @Summary Hisse Senetlerini Listele
-// @Description Veritabanındaki tüm hisse senetlerini listeler
-// @Tags Stocks
-// @Produce json
-// @Success 200 {array} models.Stock
-// @Failure 500 {object} map[string]string
-// @Router /stocks [get]
 func GetStocks(c echo.Context) error {
 	stocks, err := services.GetStocks()
 	if err != nil {
@@ -22,4 +14,21 @@ func GetStocks(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, stocks)
+}
+
+func GetStock(c echo.Context) error {
+	stockSymbol := c.Param("stock_symbol")
+	if stockSymbol == "" {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid stock symbol"})
+	}
+
+	stock, err := services.GetStock(stockSymbol)
+	if err != nil {
+		if err.Error() == "stock not found" {
+			return c.JSON(http.StatusNotFound, map[string]string{"error": "Stock not found"})
+		}
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to fetch stock"})
+	}
+
+	return c.JSON(http.StatusOK, stock)
 }

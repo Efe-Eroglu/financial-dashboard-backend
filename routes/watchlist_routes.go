@@ -9,7 +9,7 @@ import (
 
 func initWatchlistRoutes(e *echo.Echo) {
 
-	e.GET("/watchlists", controllers.GetWatchList)
+	e.GET("/watchlist", controllers.GetWatchList, middleware.AuthMiddleware)
 	e.POST("/watchlist", controllers.AddToWatchlist, middleware.AuthMiddleware)
 	e.DELETE("/watchlist/:stock_symbol", controllers.DeleteToWatchlist, middleware.AuthMiddleware)
 

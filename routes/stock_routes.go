@@ -9,5 +9,6 @@ import (
 func initStockRoutes(e *echo.Echo) {
 
 	e.GET("/stocks", controllers.GetStocks)
+	e.GET("/stocks/:stock_symbol", controllers.GetStock)
 
 }
