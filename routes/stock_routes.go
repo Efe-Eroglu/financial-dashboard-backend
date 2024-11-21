@@ -3,12 +3,11 @@ package routes
 import (
 	"pulsefin/controllers"
 
-	"github.com/jmoiron/sqlx"
 	"github.com/labstack/echo/v4"
 )
 
-func initStockRoutes(e *echo.Echo, db *sqlx.DB) {
+func initStockRoutes(e *echo.Echo) {
 
-	e.GET("/stocks", controllers.GetStocks(db))
+	e.GET("/stocks", controllers.GetStocks)
 
 }

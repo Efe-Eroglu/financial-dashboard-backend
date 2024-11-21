@@ -13,8 +13,8 @@ import (
 func main() {
 	config.LoadConfig()
 
-	db := database.ConnectDB()
-	defer db.Close()
+	database.ConnectDB()
+	defer database.DB.Close()
 
 	e := echo.New()
 
@@ -22,7 +22,7 @@ func main() {
 	e.Use(middleware.Recover())
 	e.Use(middleware.CORS())
 
-	routes.InitRoutes(e, db)
+	routes.InitRoutes(e, database.DB)
 
 	port := config.AppConfig.ServerPort
 	log.Printf("Server is running on port %s", port)
