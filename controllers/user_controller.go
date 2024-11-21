@@ -8,17 +8,16 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func GetStocks(db *sqlx.DB) echo.HandlerFunc {
+func GetUsers(db *sqlx.DB) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		var stocks []models.Stock
+		var users []models.User
 
-		query := "SELECT * FROM stocks"
-		err := db.Select(&stocks, query)
-
+		query := "SELECT * FROM users"
+		err := db.Select(&users, query)
 		if err != nil {
 			return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Database query failed"})
 		}
 
-		return c.JSON(http.StatusOK, stocks)
+		return c.JSON(http.StatusOK, users)
 	}
 }

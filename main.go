@@ -2,32 +2,29 @@ package main
 
 import (
 	"log"
-	"net/http"
-	"os"
+	"pulsefin/config"
 	"pulsefin/database"
+	"pulsefin/routes"
 
-	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
 func main() {
-
-	if err := godotenv.Load(); err != nil {
-		log.Println("Dosya bulunamadı (.env)")
-	}
+	config.LoadConfig()
 
 	db := database.ConnectDB()
 	defer db.Close()
 
 	e := echo.New()
 
-	e.GET("/health", func(c echo.Context) error {
-		return c.JSON(http.StatusOK, map[string]string{
-			"status": "Server is running",
-		})
-	})
+	e.Use(middleware.Logger())
+	e.Use(middleware.Recover())
+	e.Use(middleware.CORS())
 
-	port := os.Getenv("SERVER_PORT")
-	e.Logger.Fatal(e.Start((":" + port)))
+	routes.InitRoutes(e, db)
 
+	port := config.AppConfig.ServerPort
+	log.Printf("Server is running on port %s", port)
+	e.Logger.Fatal(e.Start(":" + port))
 }
