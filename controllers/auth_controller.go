@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 	"pulsefin/models"
 	"pulsefin/services"
@@ -9,18 +10,6 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-// RegisterUser godoc
-// @Summary Kullanıcı Kaydı
-// @Description Yeni bir kullanıcı kaydı yapar
-// @Tags Auth
-// @Accept json
-// @Produce json
-// @Param user body models.User true "Kullanıcı bilgileri"
-// @Success 201 {object} map[string]string
-// @Failure 400 {object} map[string]string
-// @Failure 409 {object} map[string]string
-// @Failure 500 {object} map[string]string
-// @Router /auth/register [post]
 func RegisterUser(c echo.Context) error {
 	var user models.User
 	if err := c.Bind(&user); err != nil {
@@ -37,18 +26,6 @@ func RegisterUser(c echo.Context) error {
 	return c.JSON(http.StatusCreated, map[string]string{"message": "User registered successfully"})
 }
 
-// LoginUser godoc
-// @Summary Kullanıcı Girişi
-// @Description Kullanıcı giriş yapar ve JWT döndürür
-// @Tags Auth
-// @Accept json
-// @Produce json
-// @Param credentials body object true "Kullanıcı giriş bilgileri"
-// @Success 200 {object} map[string]string
-// @Failure 400 {object} map[string]string
-// @Failure 401 {object} map[string]string
-// @Failure 500 {object} map[string]string
-// @Router /auth/login [post]
 func LoginUser(c echo.Context) error {
 	var credentials struct {
 		Email    string `json:"email"`
@@ -95,4 +72,26 @@ func ResetPassword(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, map[string]string{"message": "Password updated successfully"})
+}
+
+func ForgotPassword(c echo.Context) error {
+	var request struct {
+		Email string `json:"email"`
+	}
+
+	if err := c.Bind(&request); err != nil || request.Email == "" {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid email format or missing email"})
+	}
+
+	resetCode, err := services.CreatePasswordResetRequest(request.Email)
+	if err != nil {
+		if err.Error() == "user not found" {
+			return c.JSON(http.StatusNotFound, map[string]string{"error": "User not found"})
+		}
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to process request"})
+	}
+
+	fmt.Printf("Mock email sent to %s: Reset code: %s\n", request.Email, resetCode)
+
+	return c.JSON(http.StatusOK, map[string]string{"message": "If the email exists, a password reset code has been sent"})
 }

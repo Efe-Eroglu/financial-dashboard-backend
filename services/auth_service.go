@@ -1,10 +1,13 @@
 package services
 
 import (
+	"crypto/rand"
 	"errors"
+	"fmt"
 	"pulsefin/database"
 	"pulsefin/models"
 	"pulsefin/utils"
+	"time"
 )
 
 func RegisterUser(user *models.User) error {
@@ -65,4 +68,35 @@ func ResetPassword(email, oldPassword, newPassword string) error {
 	}
 
 	return nil
+}
+
+func GenerateResetCode() string {
+	b := make([]byte, 3)
+	rand.Read(b)
+	return fmt.Sprintf("%06d", (int(b[0])<<16+int(b[1])<<8+int(b[2]))%1000000)
+}
+
+func CreatePasswordResetRequest(email string) (string, error) {
+	var count int
+	query := "SELECT COUNT(*) FROM users WHERE email = $1"
+	err := database.DB.Get(&count, query, email)
+	if err != nil || count == 0 {
+		return "", errors.New("user not found")
+	}
+
+	resetCode := GenerateResetCode()
+	expiresAt := time.Now().Add(15 * time.Minute)
+
+	query = "INSERT INTO password_resets (email, reset_code, expires_at) VALUES ($1, $2, $3)"
+	_, err = database.DB.Exec(query, email, resetCode, expiresAt)
+	if err != nil {
+		return "", errors.New("failed to create password reset request")
+	}
+	sendMockEmail(email, resetCode)
+
+	return resetCode, nil
+}
+
+func sendMockEmail(email, resetCode string) {
+	fmt.Printf("Mock Email Sent to %s: Your reset code is %s\n", email, resetCode)
 }
