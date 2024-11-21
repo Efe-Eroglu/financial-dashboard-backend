@@ -7,6 +7,14 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+// GetNews godoc
+// @Summary Haberleri Listele
+// @Description Veritabanındaki tüm haberleri listeler
+// @Tags News
+// @Produce json
+// @Success 200 {array} models.News
+// @Failure 500 {object} map[string]string
+// @Router /news [get]
 func GetNews(c echo.Context) error {
 	news, err := services.GetNews()
 	if err != nil {

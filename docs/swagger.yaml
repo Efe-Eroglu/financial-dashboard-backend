@@ -1,0 +1,240 @@
+basePath: /
+definitions:
+  models.News:
+    properties:
+      content:
+        type: string
+      headline:
+        type: string
+      id:
+        type: integer
+      published_at:
+        type: string
+      source:
+        type: string
+      stock_symbol:
+        type: string
+    type: object
+  models.Stock:
+    properties:
+      change_percentage:
+        type: number
+      high_price:
+        type: number
+      id:
+        type: integer
+      low_price:
+        type: number
+      market_cap:
+        type: number
+      name:
+        type: string
+      previous_close_price:
+        type: number
+      symbol:
+        type: string
+      updated_at:
+        type: string
+      volume:
+        type: integer
+    type: object
+  models.User:
+    properties:
+      created_at:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      password_hash:
+        type: string
+      username:
+        type: string
+    type: object
+  models.Watchlist:
+    properties:
+      added_at:
+        type: string
+      id:
+        type: integer
+      stock_symbol:
+        type: string
+      user_id:
+        type: integer
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: REST API for Financial Dashboard
+  title: Financial Dashboard API
+  version: "1.0"
+paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Kullanıcı giriş yapar ve JWT döndürür
+      parameters:
+      - description: Kullanıcı giriş bilgileri
+        in: body
+        name: credentials
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Kullanıcı Girişi
+      tags:
+      - Auth
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      description: Yeni bir kullanıcı kaydı yapar
+      parameters:
+      - description: Kullanıcı bilgileri
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "409":
+          description: Conflict
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Kullanıcı Kaydı
+      tags:
+      - Auth
+  /news:
+    get:
+      description: Veritabanındaki tüm haberleri listeler
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.News'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Haberleri Listele
+      tags:
+      - News
+  /stocks:
+    get:
+      description: Veritabanındaki tüm hisse senetlerini listeler
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Stock'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Hisse Senetlerini Listele
+      tags:
+      - Stocks
+  /users:
+    get:
+      description: Veritabanındaki tüm kullanıcıları listeler
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.User'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Kullanıcıları Listele
+      tags:
+      - Users
+  /watchlist:
+    get:
+      description: Veritabanındaki tüm izleme listesini listeler
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Watchlist'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: İzleme Listesini Listele
+      tags:
+      - WatchList
+swagger: "2.0"
