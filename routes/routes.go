@@ -11,4 +11,5 @@ func InitRoutes(e *echo.Echo, db *sqlx.DB) {
 	initWatchlistRoutes(e)
 	initNewsRoutes(e)
 	initAuthRoutes(e)
+	InitWebSocketRoutes(e)
 }

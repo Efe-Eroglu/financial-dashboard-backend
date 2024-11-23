@@ -20,6 +20,7 @@ type Config struct {
 	SMTPPort     string
 	SMTPEmail    string
 	SMTPPassword string
+	WEBSOCKETURL string
 }
 
 var AppConfig Config
@@ -48,6 +49,7 @@ func LoadConfig() {
 		SMTPPort:     getEnvOrDefault("SMTP_PORT", "587"),
 		SMTPEmail:    getEnvOrPanic("SMTP_EMAIL"),
 		SMTPPassword: getEnvOrPanic("SMTP_PASSWORD"),
+		WEBSOCKETURL: getEnvOrPanic("WEBSOCKET_URL"),
 	}
 }
 
