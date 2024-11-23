@@ -14,11 +14,6 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 )
 
-// @title Financial Dashboard API
-// @version 1.0
-// @description REST API for Financial Dashboard
-// @host localhost:8080
-// @BasePath /
 func main() {
 	config.LoadConfig()
 
