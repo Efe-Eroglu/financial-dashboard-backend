@@ -14,13 +14,13 @@ import (
 // Kullanıcı ve sembol bazlı bağlantılar
 var WebSocketConnections = make(map[int]map[string]*websocket.Conn)
 
+// StartTickerWebSocketForUser başlatılır
 func StartTickerWebSocketForUser(userID int) error {
 	watchlist, err := GetWatchlist(userID)
 	if err != nil {
 		return err
 	}
 
-	// Kullanıcı için bağlantı haritasını başlat
 	if WebSocketConnections[userID] == nil {
 		WebSocketConnections[userID] = make(map[string]*websocket.Conn)
 	}
@@ -45,7 +45,6 @@ func startWebSocketForSymbol(userID int, symbol string) error {
 		return err
 	}
 
-	// Kullanıcı bağlantısını sembol ile ilişkilendir
 	WebSocketConnections[userID][symbol] = conn
 	log.Printf("WebSocket bağlantısı başarılı: User ID: %d, Symbol: %s\n", userID, symbol)
 
@@ -71,9 +70,7 @@ func listenToWebSocket(conn *websocket.Conn, userID int, symbol string) {
 	defer func() {
 		log.Printf("WebSocket bağlantısı kapatılıyor: Symbol: %s, User ID: %d\n", symbol, userID)
 		conn.Close()
-		delete(WebSocketConnections[userID], symbol) // Sembol bazlı bağlantıyı kaldır
-
-		// Kullanıcının tüm sembolleri kapandıysa haritayı temizle
+		delete(WebSocketConnections[userID], symbol)
 		if len(WebSocketConnections[userID]) == 0 {
 			delete(WebSocketConnections, userID)
 		}
@@ -106,16 +103,36 @@ func processTickerData(rawData interface{}, symbol string) {
 		return
 	}
 
+	lastPrice := parseFloat(tickerData["last"])
+	high24h := parseFloat(tickerData["high24h"])
+	low24h := parseFloat(tickerData["low24h"])
+	volume24h := parseFloat(tickerData["vol24h"])
+	change := 0.0
+
+	if low24h > 0 {
+		change = ((lastPrice - low24h) / low24h) * 100
+	}
+
 	ticker := models.Ticker{
 		Symbol:    symbol,
-		LastPrice: parseFloat(tickerData["last"]),
-		High24h:   parseFloat(tickerData["high24h"]),
-		Low24h:    parseFloat(tickerData["low24h"]),
-		Volume24h: parseFloat(tickerData["vol24h"]),
+		LastPrice: lastPrice,
+		High24h:   high24h,
+		Low24h:    low24h,
+		Volume24h: volume24h,
+		Change:    change,
 		Timestamp: time.Now(),
 	}
 
 	log.Printf("Anlık Fiyat (%s): %+v\n", symbol, ticker)
+
+	for userID, connections := range WebSocketConnections {
+		if conn, exists := connections[symbol]; exists && conn != nil {
+			err := conn.WriteJSON(ticker)
+			if err != nil {
+				log.Printf("WebSocket mesajı gönderilemedi (%s, User ID: %d): %v\n", symbol, userID, err)
+			}
+		}
+	}
 }
 
 func parseFloat(value interface{}) float64 {
