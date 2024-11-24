@@ -13,4 +13,5 @@ func initAuthRoutes(e *echo.Echo) {
 	e.PUT("/auth/reset-password", controllers.ResetPassword, middleware.AuthMiddleware)
 	e.POST("/auth/forgot-password", controllers.ForgotPassword)
 	e.POST("/auth/reset-password-code", controllers.ResetPasswordWithCode)
+	e.POST("/auth/logout", controllers.LogoutUser, middleware.AuthMiddleware)
 }
