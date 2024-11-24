@@ -8,5 +8,9 @@ import (
 )
 
 func InitWebSocketRoutes(e *echo.Echo) {
+	// WebSocket başlatma
 	e.POST("/websocket/start", controllers.StartWebSocketForUser, middleware.AuthMiddleware)
+
+	// WebSocket durdurma
+	e.POST("/websocket/stop", controllers.StopWebSocketForUser, middleware.AuthMiddleware)
 }

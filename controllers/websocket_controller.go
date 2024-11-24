@@ -20,3 +20,13 @@ func StartWebSocketForUser(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, map[string]string{"message": "WebSocket connections started for user"})
 }
+
+func StopWebSocketForUser(c echo.Context) error {
+	userID, ok := c.Get("userID").(int)
+	if !ok || userID <= 0 {
+		return c.JSON(http.StatusUnauthorized, map[string]string{"error": "Invalid or missing token"})
+	}
+
+	services.StopWebSocketForUser(userID)
+	return c.JSON(http.StatusOK, map[string]string{"message": "WebSocket connections stopped for user"})
+}
